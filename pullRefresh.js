@@ -10,7 +10,7 @@ $.fn.extend({
         }
         var settings = $.extend(defaults, option || {}); //init
         console.log(settings)
-            var _hasPhone = navigator.userAgent.match(/(iPhone|iPod|Android|ios)/i);
+            var _hasPhone = navigator.userAgent.match(/(iPhone|iPod|Android|ios)/i);            
             var height=settings.height;
             var className="loading_icon";          
             var _hasTouch = 'ontouchstart' in window;
@@ -27,13 +27,22 @@ $.fn.extend({
                     _TransitionObj.translitionTime(0.5);
                     _TransitionObj.translate(0);
                 }
-            };
+            };    
+            var flag=true
             var _bindTouchEvents = function () {
-                el.bind("touchstart", _touchstartHandler);
+            if(_hasPhone){
+            	el.bind("touchstart", _touchstartHandler);
                 el.bind("touchmove", _touchmoveHandler);
                 el.bind("touchend", _touchendHandler);
+            }else{
+            	el.bind("mousedown", _touchstartHandler);
+                el.bind("mousemove", _touchmoveHandler);
+                el.bind("mouseup", _touchendHandler);
+            }
+              
             };
-            var _touchstartHandler = function (e) {            	
+            var _touchstartHandler = function (e) {  
+            	flag=false;
                 settings.loading_icon.removeClass(className);
                 var even = typeof event == "undefined" ? e : event;
                 //保存当前鼠标Y坐标
@@ -46,7 +55,7 @@ $.fn.extend({
             };
             var changeHeight;
             var _touchmoveHandler = function (e) {  
-             	if($(document).scrollTop()>=10){
+             	if($(document).scrollTop()>=10||flag){
              		return
              	}
              	changeHeight=_end - _start;
@@ -70,6 +79,7 @@ $.fn.extend({
             	_TransitionObj.translate(0)
             }
             var _touchendHandler = function (e) {
+            	flag=true;
             	if($(document).scrollTop()>0){
              		return
              	}
